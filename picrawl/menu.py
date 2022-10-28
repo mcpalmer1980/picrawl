@@ -343,14 +343,18 @@ def option_menu(menu, glob):
             filter_menu(menu, glob)
             return
         glob.delay = options['speed']['value']
+        glob.grid_size = options['gridsize']['selected'] + 2
 
     screen = 0 if glob.fullscreen else 1
     folders = 1 if glob.subfolders else 0
+    gridsize = glob.grid_size-2 if glob.grid_size in range(2, 6) else 1
     options = dict(
         screen=dict(type='OPTION', options=('On', 'Off'),
                 pre='Fullscreen: ', post='', selected=screen),
         folders=dict(type='OPTION', options=('Off', 'On'),
                 pre='Subfolders: ', post='', selected=folders),
+        gridsize=dict(type='OPTION', options = [str(i) for i in range(2, 6)],
+                pre='Grid Size: ', post='', selected=gridsize),
         crawl=('Crawl Image Folder',),
         filter=('Filter Images',),
         scan=('Scan for Tags',),
@@ -420,9 +424,12 @@ def get_all_tags(glob):
     print('scanning for tags', end='', flush=True)
     st = time.time()
     results = get_tags(path, workers, drawinfo)
+    #for r in results:
+    #    print(r)
     tag_data, tag_list = process_tags(results)
     print(f'\n{len(results)} images with {workers} workers: {int((time.time() - st)*1000)}ms')
     screen.target = target 
+    write_tags(tag_data, tag_list, glob.path)
 
 
 def get_tags(path, workers, drawinfo):
@@ -430,7 +437,7 @@ def get_tags(path, workers, drawinfo):
     import time, os, sys
 
     types = ('.jpg', '.png', '.tif', '.gif', '.bmp')
-    files = [path+fn for fn in os.listdir(path) if fn[-4:].lower() in types]
+    files = [os.path.join(path, fn) for fn in os.listdir(path) if fn[-4:].lower() in types]
     cmd = os.path.join(os.path.dirname(__file__), 'exiftool')
     params = cmd, '-Keywords', '-tagsList', '-S', '-f'
     total = len(files)
@@ -468,6 +475,7 @@ def get_tags(path, workers, drawinfo):
 def process_tags(results):
     processed = {}
     full_tags = []
+    print()
     for fn, r in results:
         try:
             key, tag, *_ = r.decode().split('\n')
@@ -487,6 +495,7 @@ def process_tags(results):
     return processed, sorted(list(set(full_tags)))
 
 def write_tags(info, tags, path):
+    print(f'path: {path}\ninfo: {info}\ntags: {tags}\n')
     with open(os.path.join(path, 'tags.txt'), 'w') as outp:
         print(' '.join(tags), file=outp)
         for fn, tags in info.items():
