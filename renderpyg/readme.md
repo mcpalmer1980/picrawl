@@ -1,5 +1,5 @@
 # renderpyg
-![](./renderpyg/docs/banner.png)
+![](./docs/banner.png)
 
 ## A pygame add-on for GPU texture rendering
 
@@ -61,7 +61,7 @@ The GPUAniSprite class is fully compatible with sprite groups and supports keyfr
 You may load images from an XML file created with TexturePacker. You must save it into XML format, uncheck
 *Allow Rotation*, uncheck *Allow Trim*, and check *Fixed Size* in the options when you save your XML file. You may then load it with the renderpyg.load_xml_images() function.
 
-![sprite sheet|%20](./renderpyg/docs/aliens.png)
+![sprite sheet|%20](./docs/aliens.png)
 
 ```py
 anim = keyframes((1,2,3,4), 250, velocity=(15,0))
@@ -83,7 +83,7 @@ The TextureFont class supports True Type Fonts (.ttf) that can be loaded by the 
 
 For best performance you should use as few textures as possible. Use TextureFont.multi_font() to load multiple fonts into the same texture.
 
-![font example](./renderpyg/docs/text.png)
+![font example](./docs/text.png)
 
 ```py
 tfont = TextureFont(renderer, example_data+'font.ttf', 64)
@@ -99,7 +99,7 @@ for _ in range(1000):
 # Tilemaps
 The Tilemap class can be used to draw tilemaps loaded from a Tiled tmx file or from a text string. Tilemaps support scrolling and zooming, and the camera can be used as a global transform that makes sure all of your other onscreen objects all draw in the right place.
 
-![tilemap](./renderpyg/docs/tilemap.png)
+![tilemap](./docs/tilemap.png)
 
 ```py
 tilemap = load_tmx(renderer, path+'tilemap.tmx')
@@ -117,7 +117,7 @@ for _ in range(1000):
 # Nine Patches
 The NinePatch class can smoothly scale specialy designed images that are very useful for buttons and dialog boxes.
 
-![nine patch](./renderpyg/docs/nine.png)
+![nine patch](./docs/nine.png)
 
 ```py
 texture = load_texture(renderer, example_data+'nine.png')
@@ -129,7 +129,7 @@ renderer.present()
 # Menu  
 The Menu class can draw and handle menus that include informational dialogs, selection boxes, text input, and option screens. By default, the menus will be modal, handling its own input and drawing until the user makes their selection and then returning a value. Your program will halt during this time. Alternatively, you may pass the modeless=True flag and the menu will return right away. Use the menu.handle() method once per frame so the menu can draw and handle input.
 
-![sprite sheet|%20](./renderpyg/docs/menu.png)
+![sprite sheet|%20](./docs/menu.png)
 
 Start by loading the fonts and images that you wish to use for your menu, and then create a menu class with whatever options you want.
 
