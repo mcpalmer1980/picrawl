@@ -993,7 +993,7 @@ class Menu:
 				for item in items:
 					if not isinstance(item, str):
 						print(item,str)
-						raise 'invalid option: {}'.format(option)		
+						raise ValueError('invalid option: {}'.format(option))
 					width = max(
 						self.font.width(pre + item + post,
 						self.reg_scale)+opt_width, width)
@@ -1154,7 +1154,13 @@ class Menu:
 			if self.position in (7,8,9):
 				self.area.bottom = self.viewport.bottom
 
-
+	def create(self, typ, *args, **kwargs):
+		if typ in ('dialog', 'input', 'options', 'select'):
+			print(f'created {typ} menu')
+			return getattr(self, typ)(*args, **kwargs)
+		else:
+			raise ValueError('{typ} is not a valid Menu type'.format(
+					typ))
 
 	def dialog(
 			self, text, title, buttons=None, width=0,
