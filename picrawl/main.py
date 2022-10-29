@@ -90,7 +90,7 @@ def main():
     controller_init()
     path, first_file = set_options()
     timer = pg.time.Clock()
-    timer.tick()/tmp/ramdisk/images/NBA Jam Tournament Edition (32X) (W) [!].png
+    timer.tick()
 
 
     # get list of files or exit if none found
