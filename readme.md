@@ -33,6 +33,7 @@ _path:_ file or folder where images shuffled from all subfolders
   change mode: enter, mouse 2           slideshow: p key, long mouse 2
   fullscreen: f key, menu, mouse 4      gridview: g key, mouse 2 + 1
   zoom: up/down keys, mouse 2 + wheel   scroll: wasd keys, mouse 2 + cursor
+  mark/unmark: k
 ```
 
 ## Controls: (Controller)
@@ -44,6 +45,7 @@ _path:_ file or folder where images shuffled from all subfolders
   fullscreen: X button                  gridview: Y button
   zoom: d-pad up/down                   scroll: left stick
   gridview cursor: left stick           gridview select: Y button
+  mark/unmark: R1 button
 ```
 
 ## Menu Options

@@ -5,6 +5,7 @@ install with the following command: pip install .
 
 TODO: add get_max_options and get_longest_item to menu
       add menu.create(type, blah, blah)
+      add mark button and key
 '''
 
 import sys, os, random
@@ -89,7 +90,8 @@ def main():
     controller_init()
     path, first_file = set_options()
     timer = pg.time.Clock()
-    timer.tick()
+    timer.tick()/tmp/ramdisk/images/NBA Jam Tournament Edition (32X) (W) [!].png
+
 
     # get list of files or exit if none found
     files, total, tags = get_files(path)
@@ -142,6 +144,8 @@ def main():
                     scale_rect(-1, dest)
                 elif ev.key == K_m:
                     menu()
+                elif ev.key == K_k:
+                    g.marked[g.last_file] = not g.marked.get(g.last_file, False)
 
                 # handle key panning
                 elif ev.key == pg.K_w: pan['y'] = 1
@@ -263,6 +267,8 @@ def main():
                     scale_rect(-1, dest)
                 elif ev.button == CBUTT['play']:
                     start_slideshow()
+                elif ev.button == CBUTT['mark']:
+                    g.marked[g.last_file] = not g.marked.get(g.last_file, False)
 
         # keyboard panning
         if not g.gridview:
@@ -633,14 +639,15 @@ def pan_image(dest, dx, dy, reverse=False):
 
 CBUTT = dict(
     mode=4, menu=6, zin=11, zout=12, next=(0,14), prev=(1,13), sel=1,
-    horz=0, vert=1, left=13, right=14, fullscreen=3, gridview=2, play=9)
+    horz=0, vert=1, left=13, right=14, fullscreen=3, gridview=2,
+    mark=10, play=9)
 
 def controller_init(index=0):
     if not Controller.init() and Controller.get_count() > 0:
         print(f'controller found: {Controller.name_forindex(index)}')
         g.controller = Controller.Controller(index)
     else:
-        pass
+        print('No controller found')
 
 def set_options():
     'Handle command line parameters'
