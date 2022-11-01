@@ -4,8 +4,9 @@ usage available by using pycrawl -h
 install with the following command: pip install .
 
 TODO: add get_max_options and get_longest_item to menu
-      add menu.create(type, blah, blah)
-      add mark button and key
+      title in bar
+      desktop rez based scaling
+      scale ninepatch
 '''
 
 import sys, os, random
@@ -219,7 +220,7 @@ def main():
                     pg.mouse.set_visible(True)
                 if r_mod:
                     r_mod_used = True
-                    pan_image(dest, *ev.rel, True)
+                    pan_image(dest, *ev.rel, False)
                 if ev.pos[1] < 5:
                     show_message(os.path.split(g.last_file)[-1])
             
@@ -618,24 +619,34 @@ def show_message(text, time = 4, force=True):
 
 def scale_rect(scale, dest):
     'Scale destination rect for zooming'
+    if g.render_rect.contains(dest) or not hasattr(scale_rect, 'scale'):
+        scale_rect.scale = 1
     am = .2 if scale > 0 else -.2
+    scale_rect.scale += am
     r = dest.inflate(dest.w*am, dest.h*am)
+
+    nx = (1+am) * (dest.x - g.render_rect.centerx) + g.render_rect.centerx
+    ny = (1+am) * (dest.y - g.render_rect.centery) + g.render_rect.centery
+
     if g.render_rect.contains(r):
         dest.update(*dest.fit(g.render_rect))
     else:
         dest.inflate_ip(dest.w*am, dest.h*am)
+        dest.x = nx
+        dest.y = ny
 
 def pan_image(dest, dx, dy, reverse=False):
     if reverse:
         dx, dy = -dx, -dy
     if dest.w >= g.render_rect.w:
-        dest.x += dx    
+        dest.x -= dx    
         dest.right = max(dest.right, g.render_rect.right)
         dest.left = min(dest.left, 0)
     if dest.h >= g.render_rect.h:
-        dest.y += dy    
+        dest.y -= dy    
         dest.bottom = max(dest.bottom, g.render_rect.bottom)
         dest.top = min(dest.top, 0)
+
 
 CBUTT = dict(
     mode=4, menu=6, zin=11, zout=12, next=(0,14), prev=(1,13), sel=1,
