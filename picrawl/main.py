@@ -5,8 +5,6 @@ install with the following command: pip install .
 
 TODO: add get_max_options and get_longest_item to menu
       title in bar
-      desktop rez based scaling
-      scale ninepatch
 '''
 
 import sys, os, random
@@ -456,7 +454,6 @@ def make_window():
     glass.alpha = 50
     g.glass = glass, r.move(0, size)
 
-
     # prep font for popup messages
     g.font = pg.font.SysFont('Ariel', int(g.render_rect.h*.07))
     return screen, window
@@ -475,7 +472,13 @@ def toggle_fullscreen(image):
 
     g.buffer = Texture(g.screen, g.render_rect.size, target=True)
     g.screen.target = g.buffer
-    load_menu_data(g.screen, reload=True)
+    _, data = load_menu_data(g.screen, reload=True)
+    icon, checkmark, glass = data
+    size = int(g.render_rect.h *.1)
+    r = pg.Rect(0,0,size,size)
+    g.checkmark = checkmark, r
+    glass.alpha = 50
+    g.glass = glass, r.move(0, size)
 
     if g.gridview:
         wi = g.render_rect.w // g.grid_size

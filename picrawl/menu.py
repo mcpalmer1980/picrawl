@@ -1,10 +1,7 @@
 '''
-butt_padding // 2 might be wrong @ 495
-Main 7: Info, Mark, GridView, Slideshow, File, Options, Exit
-File 6: Browse, *Copy, Delete, Invert, *Move, Rename, Remove
-Options 5: Fullscreen, Subfolders, Crawl Image Folder, Filter Images, Scan For Tags, Slideshow Delay
+Draw and handle the menu and its options
 
-modals: Add a Tag*, Confirm update tags, New Folder, *cancel=False
+butt_padding // 2 might be wrong @ 495
 '''
 import os, sys, random, math
 
@@ -24,19 +21,19 @@ wanted_data = {
     'File Modification Date/Time': 'Date', 'Keywords': 'Tags'}
 
 loaded_data = None
-def load_menu_data(screen, reload=False, scale=.8):
+def load_menu_data(screen, reload=False):
     global loaded_data
     if loaded_data and not reload:
         return loaded_data
-
     EXAMPLE_DATA = os.path.join(os.path.dirname(__file__), 'renderpyg', 'data', '')
     MENU_DATA = os.path.join(os.path.dirname(__file__), '')
 
     render_rect = screen.target.get_rect()
+    scale = render_rect.h / 1080
     texture = load_texture(screen, MENU_DATA+'nine.png', scale=scale)
     pg.font.init()
 
-    if render_rect.w > 640 and render_rect.h > 480:
+    if True or render_rect.w > 640 and render_rect.h > 480:
         font_size = int(screen.target.get_rect().h * 0.05)
         tfont, font = TextureFont.multi_font(screen, (
             (MENU_DATA+'font.ttf', font_size),
