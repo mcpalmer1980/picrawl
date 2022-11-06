@@ -61,6 +61,7 @@ def load_menu_data(screen, reload=False):
             sel_patch=button, width = render_rect.w/2, position='mouse',
             opt_left=arrow_l, opt_right=arrow_r, #alpha=175,
             box=box, box_fill=box_fill, box_textc=(0,50,50),
+            text_color=(0,0,255), 
             text_font=tfont, text_scale =.7, title_offset = 90*scale,
             title_font=tfont, title_scale=1.25, title_color=(0,0,200))
         menu.dialog_width = render_rect.w * .4
@@ -272,7 +273,9 @@ def remove_menu(menu, glob):
     
     handle.glob = glob
     buttons = ('Shown', 'None', 'Marked') if glob.marked else ('Shown', 'None')
-    menu.dialog('Remove shown image or all marked images from viewing list?',
+    message = 'Remove shown image or {} marked images from viewing list?'.format(
+            len(glob.marked))
+    menu.dialog(message,
             'Remove', buttons, modeless=True, width=menu.dialog_width,
             call_back=handle)
 
@@ -319,10 +322,11 @@ def delete_menu(menu, glob):
     
     handle.glob = glob
     buttons = ('Shown', 'None', 'Marked') if glob.marked else ('Shown', 'None')
-    menu.dialog('Delete shown image or all marked images from disk?\n'+
-            'Warning this action cannot be reversed!\n',
-            'Delete', buttons, modeless=True, width=menu.dialog_width,
-            call_back=handle)
+    message = 'Delete shown image or {} marked images from disk?\n' \
+            'Warning this action cannot be reversed!\n'.format(
+                len(glob.marked) )
+    menu.dialog(message, 'Delete', buttons, modeless=True, 
+            width=menu.dialog_width, call_back=handle)
 
 def option_menu(menu, glob):
     def handle(key, sel, options):
@@ -533,7 +537,8 @@ def copy_menu(menu, glob, dest, move):
 
     which = 'Move' if move else 'Copy'
     buttons = ('Shown', 'None', 'Marked') if glob.marked else ('Shown', 'None')
-    menu.dialog(f'{which} shown file or marked files to target?\n{dest}',
-            which, buttons, modeless=True, width=menu.dialog_width,
-            call_back=handle)
+    message = '{} shown file or {} marked files to target?\n{}'.format(
+            which, len(glob.marked), dest )
+    menu.dialog(message, which, buttons, modeless=True,
+            width=menu.dialog_width, call_back=handle)
 

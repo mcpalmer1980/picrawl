@@ -97,6 +97,7 @@ class Menu:
 			as used in TextureFont.animate() method
 		:param text_font: optional font for dialog text
 		:param text_scale: scaling multiplier for dialog text
+		:param text_color: optional color for text, defaults to color
 
 		:param title_anim: dict of parameters for animating menu titles
 			as used in TextureFont.animate() method
@@ -151,6 +152,7 @@ class Menu:
 		self.text_font = kwargs.get('text_font', self.font)
 		self.text_scale = kwargs.get('text_scale', 1)
 		self.text_anim = kwargs.get('text_anim')
+		self.text_color = kwargs.get('text_color', self.color)
 
 		self.title_anim = kwargs.get('title_anim')
 		self.title_scale = kwargs.get('title_scale', 1.25)
@@ -363,7 +365,7 @@ class Menu:
 				y += height
 		else:
 			for line in self.lines:
-				self.text_font.scale(line, x, y, scale)
+				self.text_font.scale(line, x, y, scale, color=self.text_color)
 				y += height
 		self._draw_buttons()
 

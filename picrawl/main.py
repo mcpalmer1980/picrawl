@@ -220,7 +220,7 @@ def main():
                     r_mod_used = True
                     pan_image(dest, *ev.rel, False)
                 if ev.pos[1] < 5:
-                    show_message(os.path.split(g.last_file)[-1])
+                    show_filename()
             
             # handle controller events
             elif ev.type == pg.CONTROLLERDEVICEADDED:
@@ -340,7 +340,7 @@ def main():
 def menu(which=None, center=False):
     global image, dest
 
-    show_message(os.path.split(g.last_file)[-1])
+    show_filename(True)
     g.message.draw(dstrect=g.message_dest)
 
     results = open_menu(g, which)
@@ -368,7 +368,7 @@ def menu(which=None, center=False):
     if results.get('next', False):
         image, dest = next_image()
 
-    show_message(os.path.split(g.last_file)[-1])
+    show_filename()
 
 def get_files(path, extensions=('.jpg', '.jpeg', '.png', '.gif', 'bmp')):
     'Create image list from given path and file extensions'
@@ -519,8 +519,8 @@ def get_image(fn):
         surf = pg.Surface((w//4, h//4))
         fn = 'error loading file'
     image = Texture.from_surface(g.screen, surf)
-    if not g.no_names and not g.gridview:
-        show_message(os.path.split(fn)[-1])
+    if not g.gridview:
+        show_filename()
     alpha = 150 if g.last_file in g.marked else 50
     g.checkmark[0].alpha = alpha
     return image, image.get_rect().fit(pg.Rect(0, 0 , *g.render_rect.size))
@@ -571,6 +571,12 @@ def next_image(forward=True, from_grid=False):
         return get_image(g.shuffled[g.current])
     elif g.mode == 1: # get image from sorted list
         return get_image(g.files[g.current])
+
+def show_filename(force = False):
+    if force or not g.no_names:
+        show_message('{} ({}/{})'.format(
+                os.path.split(g.last_file)[-1],
+                g.current+1, len(g.files) ))
 
 def start_slideshow():
     if g.slideshow:

@@ -682,6 +682,7 @@ title_offset
 as used in TextureFont.animate() method
 - *text_font*: optional font for dialog text
 - *text_scale*: scaling multiplier for dialog text
+- *text_color*: optional color for text, defaults to color
 
 ---
 
