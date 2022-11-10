@@ -345,10 +345,12 @@ def option_menu(menu, glob):
             return
         glob.delay = options['speed']['value']
         glob.grid_size = options['gridsize']['selected'] + 2
+        glob.show_names = options['fn_option']['selected']
 
     screen = 0 if glob.fullscreen else 1
     folders = 1 if glob.subfolders else 0
     gridsize = glob.grid_size-2 if glob.grid_size in range(2, 6) else 1
+    fn_options = ('Off', 'Short', 'Long')
     options = dict(
         screen=dict(type='OPTION', options=('On', 'Off'),
                 pre='Fullscreen: ', post='', selected=screen),
@@ -356,6 +358,8 @@ def option_menu(menu, glob):
                 pre='Subfolders: ', post='', selected=folders),
         gridsize=dict(type='OPTION', options = [str(i) for i in range(2, 6)],
                 pre='Grid Size: ', post='', selected=gridsize),
+        fn_option=dict(type='OPTION', options = fn_options,
+                pre='Show Filname: ', post='', selected=glob.show_names),
         crawl=('Crawl Image Folder',),
         filter=('Filter Images',),
         scan=('Scan for Tags',),

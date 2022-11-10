@@ -37,9 +37,9 @@ delays = dict(zip(range(10), ((2.5, '2.5 sec'), (5, '5 sec'), (10, '10 sec'),
 class global_data:
     'stores global data throughout program'
     mode = current = previous = message_time = 0
-    no_names = gridview = slideshow = False
+    gridview = slideshow = False
     clip = subfolders = True
-    delay = 1
+    delay = show_names = 1
     grid_size = 3
     timer = delays[1][0] * 30 # 30 fps
     fullscreen = False
@@ -573,10 +573,13 @@ def next_image(forward=True, from_grid=False):
         return get_image(g.files[g.current])
 
 def show_filename(force = False):
-    if force or not g.no_names:
+    if force or g.show_names:
+        time = (0,4,10)[g.show_names]
+        where = g.shuffled if g.mode in (0,2) else g.files
+        i = str(where.index(g.last_file) + 1)
         show_message('{} ({}/{})'.format(
                 os.path.split(g.last_file)[-1],
-                g.current+1, len(g.files) ))
+                i, len(g.files) ), time)
 
 def start_slideshow():
     if g.slideshow:
@@ -616,6 +619,8 @@ def show_message(text, time = 4, force=True):
     # create texture from text using
     surf = g.font.render(text, True, (255,255,255), (0,0,0))
     g.message = Texture.from_surface(g.screen, surf)
+    #g.message.blend_mode = 1
+    #g.message.alpha = 150
     g.message_time = time * 30
 
     # center it
@@ -730,18 +735,18 @@ def verify_flags(flags):
     for f in flags:
         if f == 'f':
             g.fullscreen = True
-        elif f == 's': # sorted instead of shuffled
+        elif f == 'p': # sorted instead of shuffled
             g.slideshow = True
         elif f in 'h?':
             print(help_message)
             exit()
-        elif f == 'p':
+        elif f == 's':
             #FIXME
-            g.mode = 2
+            g.mode = 1
         elif f == 'c':
             g.clip = False
         elif f == 'n':
-            g.no_names = True
+            g.show_names = 0
         elif f == 'g':
             g.gridview = True
         elif f == 'i':
