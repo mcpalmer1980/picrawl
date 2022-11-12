@@ -368,7 +368,11 @@ def menu(which=None, center=False):
     if results.get('next', False):
         image, dest = next_image()
 
-    show_filename()
+    if g.last_file in g.files:
+        show_filename()
+    else:
+        image, dest = next_image()
+
 
 def get_files(path, extensions=('.jpg', '.jpeg', '.png', '.gif', 'bmp')):
     'Create image list from given path and file extensions'
@@ -648,6 +652,9 @@ def scale_rect(scale, dest):
         dest.inflate_ip(dest.w*am, dest.h*am)
         dest.x = nx
         dest.y = ny
+        if (dest.w < g.render_rect.w and 
+                dest.h < g.render_rect.h):
+            dest.update(*dest.fit(g.render_rect))
 
 def pan_image(dest, dx, dy, reverse=False):
     if reverse:
