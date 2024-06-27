@@ -52,7 +52,11 @@ class global_data:
         self.screen = screen
         self.window = window
         self.tags, self.tagged = tags
-
+        self.used_tags = []
+        self.filtered = False
+        for line in self.tagged.values():
+            self.used_tags += line
+        self.used_tags = sorted(set(self.used_tags))
         self.marked = {}
         self.shuffled = list(files)
         random.shuffle(self.shuffled)
@@ -146,7 +150,15 @@ def main():
                 elif ev.key == K_k:
                     g.marked[g.last_file] = not g.marked.get(g.last_file, False)
 
-                # handle key panning
+                    ''' for the remote
+                    elif ev.key == K_PAGEUP:
+                        menu() 
+                    elif ev.key == K_PAGEDOWN:
+                        r_mod = 1
+                        g.window.relative_mouse = True
+
+
+                # handle key panning'''
                 elif ev.key == pg.K_w: pan['y'] = 1
                 elif ev.key == pg.K_s: pan['y'] = -1
                 elif ev.key == pg.K_a: pan['x'] = 1
@@ -156,6 +168,15 @@ def main():
                 elif ev.key == pg.K_s: pan['y'] = 0
                 elif ev.key == pg.K_a: pan['x'] = 0
                 elif ev.key == pg.K_d: pan['x'] = 0
+
+                '''elif ev.key == K_PAGEDOWN: for the remote
+                    if not g.gridview: # only change mode if user didn't pan or zoom
+                        if not r_mod_used:
+                            change_mode()
+                    r_mod = r_mod_used = False
+                    pg.mouse.set_visible(True)
+                    mouse_timer = mouse_hide_delay
+                    g.window.relative_mouse = False'''
 
             # handle mouse navigation
             elif ev.type == pg.MOUSEBUTTONDOWN:
@@ -218,7 +239,8 @@ def main():
                     pg.mouse.set_visible(True)
                 if r_mod:
                     r_mod_used = True
-                    pan_image(dest, *ev.rel, False)
+                    if pg.Vector2(*ev.rel).length() > 10:
+                        pan_image(dest, *ev.rel, False)
                 if ev.pos[1] < 5:
                     show_filename()
             
@@ -359,7 +381,13 @@ def menu(which=None, center=False):
         path = results['scan']
         show_message(f'Rescanned {path}')
         files, total, tags = get_files(results['scan'])
-        g.path = path
+
+        if g.path not in path:  # don't change root path while inside it
+            g.path = path       # to avoid multiple tags.txt 
+            print('updating path: old={}, new={}'.format(
+                    g.path, path ))
+        else: print('still in subfolder')
+
         g.files = sorted(files, key=lambda s: s.lower())
         g.shuffled = list(files)
         random.shuffle(g.shuffled)
@@ -560,6 +588,8 @@ def grid_view(forward=True):
     
 def next_image(forward=True, from_grid=False):
     'Load next image in the shuffled or sorted list'
+    scale_rect.scale = 1
+
     if len(g.files) < 1:
         print('Image list is empty. Exiting...')
         quit()
@@ -859,6 +889,9 @@ def quit():
         pyperclip.copy(outp)
     
     save_tags()
+    while pg.mouse.get_pressed()[0]:
+        pg.event.get()
+        pg.time.delay(50)
     pg.quit()
     exit()
 

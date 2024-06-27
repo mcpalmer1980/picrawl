@@ -14,6 +14,9 @@ from renderpyg import fetch_images, NinePatch, Menu, keyframes, round_patch
 from random import randrange
 from renderpyg.tfont import char_map
 
+exiftool = os.path.join(os.path.dirname(__file__), 'exiftool')
+if not os.path.isfile(exiftool):
+    exiftool += '.exe'
 
 wanted_data = {
     'File Name': 'Name', 'Directory': 'Folder', 'File Size': 'Size', 
@@ -48,7 +51,7 @@ def load_menu_data(screen, reload=False):
             texture, rects=(
                 sr(162 , 283, 48, 80), # 80 80
                 sr(162 , 283, 48, 80)))
-        arrow_r.flipX = True
+        arrow_r.flip_x = True
         anim_light = dict(move=(2,0), rotate=7)
         title = 'PicRawl'
 
@@ -180,9 +183,8 @@ def info_menu(menu, glob):
             width=menu.info_width)
 
 def get_image_info(filename):
-    cmd = os.path.join(os.path.dirname(__file__), 'exiftool')
     date = ('-d', """%d-%b-%Y_%H:%M:%S""")
-    results = sp.run((cmd, *date, filename), 
+    results = sp.run((exiftool, *date, filename), 
             stdout=sp.PIPE, text=True)
 
     dinfo = {} 
@@ -229,10 +231,9 @@ def edit_tags(menu, glob, info):
             results = menu.dialog('Would you like to update the tags for this file?',
                     "Confirm", ('Yes', 'No'), width=menu.dialog_width)
             if results == 'Yes':
-                cmd = os.path.join(os.path.dirname(__file__), 'exiftool')
                 tags = info.get('Tags', '')
                 if tags:
-                    results = sp.run((cmd, glob.last_file, '-overwrite_original',
+                    results = sp.run((exiftool, glob.last_file, '-overwrite_original',
                         '-Keywords='+tags), stdout=sp.PIPE, text=True)
                     glob.tagged[glob.last_file] = tags.split(' ')
         return
@@ -337,6 +338,7 @@ def option_menu(menu, glob):
                 glob.subfolders = not glob.subfolders
                 menu.return_values['scan'] = glob.path
         elif key == 'crawl':
+            glob.filtered = False
             menu.return_values['scan'] = os.path.dirname(glob.last_file)
         elif key == 'scan':
             get_all_tags(glob)
@@ -359,7 +361,7 @@ def option_menu(menu, glob):
         gridsize=dict(type='OPTION', options = [str(i) for i in range(2, 6)],
                 pre='Grid Size: ', post='', selected=gridsize),
         fn_option=dict(type='OPTION', options = fn_options,
-                pre='Show Filname: ', post='', selected=glob.show_names),
+                pre='Show Filename: ', post='', selected=glob.show_names),
         crawl=('Crawl Image Folder',),
         filter=('Filter Images',),
         scan=('Scan for Tags',),
@@ -378,6 +380,7 @@ def filter_menu(menu, glob):
         files = []
 
         if sel == 0:
+            glob.filtered = glob.files, glob.shuffled
             text, _, confirm = menu.input('Enter Search Term',
                 ('Okay', 'Cancel'), menu.dialog_width,
                 can_cancel=True)
@@ -390,7 +393,19 @@ def filter_menu(menu, glob):
             if not files:
                 glob.next_message = 'No matches found', 3
                 return
+        elif option == '<-Unfilter->':
+            #menu.return_values['scan'] = glob.path
+            sel = glob.files[glob.current] if glob.mode == 1 else glob.shuffled[glob.current]
+            glob.files, glob.shuffled = glob.filtered
+            if glob.mode == 1:
+                glob.current = glob.files.index(sel)
+            else: glob.current = glob.shuffled.index(sel)
+            glob.filtered = False
+            return
+
         elif option in glob.tags:
+            if not glob.filtered:
+                glob.filtered = glob.files, glob.shuffled
             for fn, tags in glob.tagged.items():
                 if option in tags:
                     files.append(fn)
@@ -403,8 +418,8 @@ def filter_menu(menu, glob):
         shuffle(files)
         glob.shuffled = files
 
-
-    menu.select(['<-Other->'] + glob.tags, 'Filter Tag',
+    top = ['<-Other->', '<-Unfilter->'] if glob.filtered else ['<-Other->']
+    menu.select(top + glob.used_tags, 'Filter Tag',
             modeless=True, call_back=handle, can_cancel=True)
 
 def get_all_tags(glob):
@@ -443,8 +458,7 @@ def get_tags(path, workers, drawinfo):
 
     types = ('.jpg', '.png', '.tif', '.gif', '.bmp')
     files = [os.path.join(path, fn) for fn in os.listdir(path) if fn[-4:].lower() in types]
-    cmd = os.path.join(os.path.dirname(__file__), 'exiftool')
-    params = cmd, '-Keywords', '-tagsList', '-S', '-f'
+    params = exiftool, '-Keywords', '-tagsList', '-S', '-f'
     total = len(files)
     count = min(workers, total)
     procs = [
@@ -510,6 +524,7 @@ def write_tags(info, tags, path):
 
 def browse_menu(menu, glob):
     def handle(path):
+        glob.filtered = False
         menu.return_values['scan'] = path
 
     path = os.path.dirname(glob.last_file)
