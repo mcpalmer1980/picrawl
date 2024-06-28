@@ -15,7 +15,7 @@ from random import randrange
 from renderpyg.tfont import char_map
 
 exiftool = os.path.join(os.path.dirname(__file__), 'exiftool')
-if not os.path.isfile(exiftool):
+if sys.platform == 'win32': # and os.path.isfile(exiftool):
     exiftool += '.exe'
 
 wanted_data = {
@@ -183,6 +183,7 @@ def info_menu(menu, glob):
             width=menu.info_width)
 
 def get_image_info(filename):
+    print(filename, exiftool)
     date = ('-d', """%d-%b-%Y_%H:%M:%S""")
     results = sp.run((exiftool, *date, filename), 
             stdout=sp.PIPE, text=True)
