@@ -26,7 +26,7 @@ def file_fine():
     return fn
 
 package_data = dict(
-        picrawl=['icon.png','nine.png', 'font.ttf', 'exiftool'] + package_files('picrawl/', 'lib'),
+        picrawl=['icon.png','nine.png', 'font.ttf', 'exiftool', 'exiftool.exe'] + package_files('picrawl', 'lib'),
         renderpyg=['data/*'])
 print(package_data)
 
@@ -40,8 +40,8 @@ setup(
     version='0.1',
     py_modules=['picrawl', 'renderpyg', 'menu'],
     packages=['picrawl', 'renderpyg'],
-    package_dir={'picrawl': 'picrawl/',
-            'renderpyg': 'renderpyg/'},
+    package_dir={'picrawl': 'picrawl',
+            'renderpyg': 'renderpyg'},
     package_data=package_data,
 
     install_requires=[
